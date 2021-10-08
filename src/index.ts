@@ -1,34 +1,22 @@
 import { Observable, Observer } from "rxjs";
+import { onErrorResumeNext } from "rxjs/operators";
 
 const observer: Observer<any> = {
-  next: (value) => console.log(value),
-  error: (error) => console.error("Mi error es: ", error),
-  complete: () => console.log("terminado"),
+  next: (value) => console.log("next: ", value),
+  error: (error) => console.warn("error: ", error),
+  complete: () => console.log("completado"),
 };
 
-const obs$ = new Observable((subs) => {
-  subs.next("hola");
-  subs.next("mundo");
-  subs.next("hola");
-  subs.next("mundo");
+const intervalo$ = new Observable<number>((subs) => {
+  let cuenta = 0;
 
-  //forzar error
-//   const a = undefined;
-//   a.b = "hola";
-
-
-  subs.next("hola");
-  subs.next("mundo");
-  subs.complete();
-
-  subs.next("hola");
-  subs.next("mundo");
+  setInterval(() => {
+    subs.next(cuenta);
+    cuenta++;
+    if (cuenta === 5){
+        subs.unsubscribe()
+    }
+  }, 1000);
 });
 
-// obs$.subscribe({
-//   next: (value) => console.log(value),
-//   error: (error) => console.error("Mi error es: ", error),
-//   complete: () => console.log("terminado"),
-// });
-
-obs$.subscribe(observer);
+intervalo$.subscribe(observer);
