@@ -1,33 +1,31 @@
-import { fromEvent, map, mapTo, pluck, range } from "rxjs";
+import { from, range } from "rxjs";
+import { filter } from "rxjs/operators";
 
-//MAP
-// //Transformando un valor y tipeando el map
-// range(1, 5)
-//   .pipe(map<number, number>((val) => val * 10))
-//   .subscribe(console.log);
+range(20, 10).pipe(
+  filter((val, index) => {
+    console.log(index);
+    return val % 2 === 1;
+  })
+);
+//   .subscribe({ next: (val) => console.log(val) });
 
-//Esta es la forma añadiendo el pipe directamente al observer para que afecte todas sus subscripciones
-// const keyup$ = fromEvent<KeyboardEvent>(document, "keyup").pipe(
-//   map((event) => event.key) //Lo transformo de una vez en el subscriber para no tener que desestructurar en cada subsripción
-// );
+const personajes = [
+  {
+    tipo: "heroe",
+    nombre: "Batman",
+  },
+  {
+    tipo: "heroe",
+    nombre: "Robin",
+  },
+  {
+    tipo: "villano",
+    nombre: "joker",
+  },
+];
 
-// keyup$.subscribe({ next: (val) => console.log(val) });
+const personajes$ = from(personajes).pipe(
+  filter(({ tipo }) => tipo === "heroe")
+);
 
-//Esta es la forma añadiendo el pipe a otro observer derivado del primero para que no afecte todas las subscripciones del observable original
-const keyup$ = fromEvent<KeyboardEvent>(document, "keyup");
-
-const keyupKey$ = keyup$.pipe(map((event) => event.key));
-
-keyupKey$.subscribe({ next: (val) => console.log("map", val) });
-
-//PLUCK
-// Para recibir sólo un valor desde un objeto emitido por el observer
-
-const keyupPluck$ = keyup$.pipe(pluck("target", "innerText")); //Pasamos el path como argumentos
-
-const keyupMapTo$ = keyup$.pipe(mapTo("Tecla Presionada")); 
-
-keyupPluck$.subscribe({ next: (val) => console.log("pluck", val) });
-keyup$.subscribe({ next: (val) =>  console.log(val)
-});
-keyupMapTo$.subscribe({ next: (val) => console.log("mapTo", val) });
+personajes$.subscribe((val) => console.log("Personaje: ", val));
